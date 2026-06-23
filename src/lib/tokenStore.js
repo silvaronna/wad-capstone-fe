@@ -15,6 +15,8 @@ export const TokenStore = {
     _accessToken = null;
     sessionStorage.removeItem("rf_token");
   },
-  // Cek apakah user punya refresh token (masih login)
-  isLoggedIn: () => !!sessionStorage.getItem("rf_token"),
+  isLoggedIn: () => {
+    const token = sessionStorage.getItem("rf_token");
+    return !!token && token !== "undefined" && token !== "null";
+  },
 };

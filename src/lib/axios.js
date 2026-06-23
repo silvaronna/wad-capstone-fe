@@ -44,10 +44,11 @@ isRefreshing = true;
 try {
 const refreshToken = TokenStore.getRefreshToken();
 if (!refreshToken) throw new Error("No refresh token");
-const { data } = await axios.post("/auth/refresh", { refreshToken
-});
-const newToken = data.data.accessToken;
+const { data } = await axios.post("/auth/refresh", { refreshToken });
+const newToken = data.accessToken;
+const newRefreshToken = data.refreshToken;
 TokenStore.setAccessToken(newToken);
+if (newRefreshToken) TokenStore.setRefreshToken(newRefreshToken);
 processQueue(null, newToken);
 orig.headers.Authorization = `Bearer ${newToken}`;
 return api(orig);

@@ -26,10 +26,13 @@ export function AuthProvider({ children }) {
         const { data } = await axios.post("/auth/refresh", {
           refreshToken: rfToken,
         });
-        TokenStore.setAccessToken(data.data.accessToken);
+        TokenStore.setAccessToken(data.accessToken);
+        if (data.refreshToken) {
+          TokenStore.setRefreshToken(data.refreshToken);
+        }
         // Ambil data user
         const { data: me } = await axios.get("/auth/me", {
-          headers: { Authorization: `Bearer ${data.data.accessToken}` },
+          headers: { Authorization: `Bearer ${data.accessToken}` },
         });
         setUser(me.data);
       } catch {
@@ -41,8 +44,8 @@ export function AuthProvider({ children }) {
     restore();
   }, []);
   const login = useCallback(async (email, password) => {
-    const { data } = await axios.post("/auth/login", { email, password });
-    const { accessToken, refreshToken, user: userData } = data.data;
+    const { data: resData } = await axios.post("/auth/login", { email, password });
+    const { accessToken, refreshToken, data: userData } = resData;
     TokenStore.setAccessToken(accessToken);
     TokenStore.setRefreshToken(refreshToken);
     setUser(userData);
