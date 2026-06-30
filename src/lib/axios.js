@@ -49,27 +49,12 @@ api.interceptors.response.use(
         const newToken = data.accessToken;
         const newRefreshToken = data.refreshToken;
         TokenStore.setAccessToken(newToken);
-        const socketModule = await import("../contexts/SocketContext");
         // Cara alternatif yang lebih sederhana: dispatch custom event
         window.dispatchEvent(
           new CustomEvent("token:refreshed", {
             detail: { token: newToken },
           }),
         );
-        // Di SocketContext.jsx — tambahkan listener untuk event ini
-        useEffect(() => {
-          const handleTokenRefresh = (e) => {
-            if (socketRef.current) {
-              // Update auth token di socket yang sudah terhubung
-              socketRef.current.auth = { token: e.detail.token };
-              // Reconnect agar server memverifikasi token baru
-              socketRef.current.disconnect().connect();
-            }
-          };
-          window.addEventListener("token:refreshed", handleTokenRefresh);
-          return () =>
-            window.removeEventListener("token:refreshed", handleTokenRefresh);
-        }, []);
         if (newRefreshToken) TokenStore.setRefreshToken(newRefreshToken);
         processQueue(null, newToken);
         orig.headers.Authorization = `Bearer ${newToken}`;

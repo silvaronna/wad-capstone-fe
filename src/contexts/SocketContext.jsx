@@ -5,8 +5,7 @@ import { TokenStore } from "../lib/tokenStore";
 const SocketContext = createContext(null);
 export function SocketProvider({ children }) {
   const { user } = useAuth();
-  const socketRef = useRef(null); // gunakan ref agar tidak memicu re-
-  render;
+  const socketRef = useRef(null); // gunakan ref agar tidak memicu re-render
   const [isConnected, setIsConnected] = useState(false);
   const [onlineCount, setOnlineCount] = useState(0);
   useEffect(() => {
